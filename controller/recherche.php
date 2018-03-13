@@ -6,9 +6,9 @@
  * Time: 11:40
  */
 
-include('../model/dbInfos.php');
 
-$_GET['search'];
+include('../model/Model.class.php');
+
 
 if (isset($_GET['search']) && trim($_GET['search'])!="") {
 
