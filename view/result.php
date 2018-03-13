@@ -55,6 +55,13 @@
 
         <center>
 
+            <?php
+
+            if (isset($_GET['search']) && trim($_GET['search'])!="")
+            {
+
+            ?>
+
             <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
@@ -67,6 +74,7 @@
                 </thead>
                 <tbody>
                     <?php
+
                     foreach($searchList as $employees)
                     {
                         echo
@@ -83,6 +91,16 @@
                     ?>
                 </tbody>
             </table>
+
+
+            <?php
+
+            }
+            else {
+                echo "<h1>Il n'y a pas de requête GET</h1>";
+            }
+
+            ?>
 
         </center>
 
