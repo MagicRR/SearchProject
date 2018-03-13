@@ -23,7 +23,7 @@
 
             <div class="container">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
-                    <form action="../controller/recherche.php" method="GET">
+                    <form action="result.php" method="GET">
                         <input type="text" class="form-control" name="search" placeholder="Search..." id="searchInput">
                         <button type="submit" class="btn btn-primary" id="buttonSubmit"><i class="fa fa-search"></i></button>
                     </form>

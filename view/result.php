@@ -1,4 +1,37 @@
-<?php include('../model/Employee.class.php') ?>
+<?php include('../model/Model.class.php') ?>
+
+<?php
+    try
+    {
+        $pdo = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.'', $user, $password);
+        $pdo->exec("set names utf8");
+    }
+    catch (PDOException $e)
+    {
+        exit($e->getMessage());
+    }
+
+
+    if (isset($_GET['search']) && trim($_GET['search'])!="") {
+
+        $req = 'SELECT *
+    			FROM eurondb.employeelist WHERE firstName = :recherche
+    			ORDER BY 1 DESC';
+
+        $statement = $pdo->prepare($req);
+
+        $statement->bindValue(':recherche', $_GET['search']);
+
+        $statement->execute();
+
+        $error = $statement->errorInfo();
+
+        if( $error[0] != 00000)
+            print_r($error);
+        else
+            $searchList = $statement->fetchall();
+    }
+?>
 
 <!DOCTYPE html>
 <html>
@@ -22,19 +55,6 @@
 
         <center>
 
-            <?php
-
-            $employeesInstance = new Employee();
-            $employeesList = $employeesInstance->getListEmployees();
-
-            // foreach($employeesList as $employees)
-            // {
-            //     print_r($employees);
-            //     echo "<br>";
-            // }
-
-            ?>
-
             <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
@@ -47,7 +67,7 @@
                 </thead>
                 <tbody>
                     <?php
-                    foreach($employeesList as $employees)
+                    foreach($searchList as $employees)
                     {
                         echo
                         "
