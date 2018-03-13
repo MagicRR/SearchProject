@@ -14,13 +14,23 @@
 
     if (isset($_GET['search']) && trim($_GET['search'])!="") {
 
+        $getSearch = '%'.$_GET['search'].'%';
+
         $req = 'SELECT *
-    			FROM eurondb.employeelist WHERE firstName = :recherche
+    			FROM eurondb.employeelist
+                WHERE eid LIKE :recherche
+                OR firstName LIKE :recherche
+                OR lastName LIKE :recherche
+                OR Email_id LIKE :recherche
+                OR Email2 LIKE :recherche
+                OR Email3 LIKE :recherche
+                OR EMail4 LIKE :recherche
+                OR status LIKE :recherche
     			ORDER BY 1 DESC';
 
         $statement = $pdo->prepare($req);
 
-        $statement->bindValue(':recherche', $_GET['search']);
+        $statement->bindValue(':recherche', $getSearch);
 
         $statement->execute();
 
