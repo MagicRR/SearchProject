@@ -1,6 +1,8 @@
 <?php include('../model/Model.class.php') ?>
 
 <?php
+    ini_set('memory_limit', '-1');
+
     try
     {
         $pdo = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.'', $user, $password);
@@ -14,8 +16,10 @@
 
     if (isset($_GET['search']) && trim($_GET['search'])!="") {
 
+        // Concaténation du % pour utiliser le LIKE
         $getSearch = '%'.$_GET['search'].'%';
 
+        // 1ère requête table Employee
         $req = 'SELECT *
     			FROM eurondb.employeelist
                 WHERE eid LIKE :recherche
@@ -39,7 +43,34 @@
         if( $error[0] != 00000)
             print_r($error);
         else
-            $searchList = $statement->fetchall();
+            $searchListEmployee = $statement->fetchall();
+
+
+        // 2ème requête table Message
+        $req2 = 'SELECT *
+    			FROM eurondb.message
+                WHERE date >= "2002-01-01" AND (
+                mid LIKE :recherche
+                OR sender LIKE :recherche
+                OR date LIKE :recherche
+                OR message_id LIKE :recherche
+                OR subject LIKE :recherche
+                OR body LIKE :recherche)
+    			ORDER BY 1 DESC';
+
+        $statement2 = $pdo->prepare($req2);
+
+        $statement2->bindValue(':recherche', $getSearch);
+
+        $statement2->execute();
+
+        $error2 = $statement2->errorInfo();
+
+        if( $error2[0] != 00000)
+            print_r($error2);
+        else
+            $searchListMessage = $statement2->fetchall();
+
     }
 ?>
 
@@ -72,6 +103,10 @@
 
             ?>
 
+            <br/>
+            <h1>Liste des Employés</h1>
+            <br/>
+
             <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
@@ -85,7 +120,7 @@
                 <tbody>
                     <?php
 
-                    foreach($searchList as $employees)
+                    foreach($searchListEmployee as $employees)
                     {
                         echo
                         "
@@ -95,6 +130,40 @@
                             <td>".$employees['lastName']."</td>
                             <td>".$employees['Email_id']."</td>
                             <td>".$employees['status']."</td>
+                        </tr>
+                        ";
+                    }
+                    ?>
+                </tbody>
+            </table>
+
+            <br/>
+            <h1>Liste des Mails</h1>
+            <br/>
+
+            <table id="messagesTables" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Expéditeur</th>
+                        <th>Sujet</th>
+                        <th>Corps du mail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+
+                    foreach($searchListMessage as $messages)
+                    {
+                        echo
+                        "
+                        <tr>
+                            <td>".$messages['mid']."</td>
+                            <td>".$messages['date']."</td>
+                            <td>".$messages['sender']."</td>
+                            <td>".$messages['subject']."</td>
+                            <td>".$messages['body']."</td>
                         </tr>
                         ";
                     }
@@ -130,7 +199,13 @@
 
 
 <script>
+
 $(document).ready(function() {
     $('#employeesTable').DataTable();
 } );
+
+$(document).ready(function() {
+    $('#messagesTables').DataTable();
+} );
+
 </script>
