@@ -5,13 +5,13 @@ $dbName = 'eurondb';
 $user   = 'mysqladmin';
 $password = "allanlevener77230";
 
-class Model
-{
+class Model{
+
 
     protected $oPDO     = false;
 
-    function __construct()
-    {
+    function __construct(){
+
         $dbHost = 'mysql-instance1.cz1z81i5du0a.eu-west-1.rds.amazonaws.com';
         $dbName = 'eurondb';
         $user   = 'mysqladmin';

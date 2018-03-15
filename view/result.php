@@ -40,10 +40,12 @@
 
         $error = $statement->errorInfo();
 
-        if( $error[0] != 00000)
+        if( $error[0] != 00000){
             print_r($error);
-        else
+        }
+        else{
             $searchListEmployee = $statement->fetchall();
+        }
 
 
         // 2ème requête table Message
@@ -66,11 +68,12 @@
 
         $error2 = $statement2->errorInfo();
 
-        if( $error2[0] != 00000)
-            print_r($error2);
-        else
+        if( $error[0] != 00000){
+            print_r($error);
+        }
+        else{
             $searchListMessage = $statement2->fetchall();
-
+        }
     }
 ?>
 
@@ -125,11 +128,11 @@
                         echo
                         "
                         <tr>
-                            <td>".$employees['eid']."</td>
-                            <td>".$employees['firstName']."</td>
-                            <td>".$employees['lastName']."</td>
-                            <td>".$employees['Email_id']."</td>
-                            <td>".$employees['status']."</td>
+                            <td>".htmlentities($employees['eid'])."</td>
+                            <td>".htmlentities($employees['firstName'])."</td>
+                            <td>".htmlentities($employees['lastName'])."</td>
+                            <td>".htmlentities($employees['Email_id'])."</td>
+                            <td>".htmlentities($employees['status'])."</td>
                         </tr>
                         ";
                     }
@@ -159,11 +162,11 @@
                         echo
                         "
                         <tr>
-                            <td>".$messages['mid']."</td>
-                            <td>".$messages['date']."</td>
-                            <td>".$messages['sender']."</td>
-                            <td>".$messages['subject']."</td>
-                            <td>".$messages['body']."</td>
+                            <td>".htmlentities($messages['mid'])."</td>
+                            <td>".htmlentities($messages['date'])."</td>
+                            <td>".htmlentities($messages['sender'])."</td>
+                            <td>".htmlentities($messages['subject'])."</td>
+                            <td>".htmlentities($messages['body'])."</td>
                         </tr>
                         ";
                     }
