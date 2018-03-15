@@ -14,6 +14,8 @@
     }
 
 
+
+
     if (isset($_GET['search']) && trim($_GET['search'])!="") {
 
         // Concaténation du % pour utiliser le LIKE
@@ -144,7 +146,7 @@
             <h1>Liste des Mails</h1>
             <br/>
 
-            <table id="messagesTables" class="table table-striped table-bordered" style="width:100%">
+            <table id="messagesTable" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -152,13 +154,67 @@
                         <th>Expéditeur</th>
                         <th>Sujet</th>
                         <th>Corps du mail</th>
+                        <th>Occurences du mot</th>
+                        <th>Poids de la recherche</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
 
+                    // Attention, c'est parti pour l'algorithme
                     foreach($searchListMessage as $messages)
                     {
+
+                        // Initialisation de l'algorithme
+                        $messages['pertinence'] = 0;
+
+                        // Occurences dans le sender, poids * 10
+                        $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
+                        // Uppercase
+                        $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
+                        // Lowercase
+                        $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
+                        // Total sender
+                        $messages['pertinence'] += $occurencesInSender * 10;
+
+
+
+                        // Occurences dans la date, poids * 100
+                        $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
+                        // Uppercase
+                        $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
+                        // Lowercase
+                        $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
+                        // Total sender
+                        $messages['pertinence'] += $occurencesInSender * 10;
+
+
+
+
+                        // Occurences dans le subject, poids * 5
+                        $occurencesInSubject = substr_count($messages['subject'], $_GET['search']);
+                        // Uppercase
+                        $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
+                        // Lowercase
+                        $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
+                        // Total subject
+                        $messages['pertinence'] += $occurencesInSubject * 5;
+
+
+
+
+                        // Occurences dans le body, poids * 1
+                        $occurencesInBody = substr_count($messages['body'], $_GET['search']);
+                        // Uppercase
+                        $occurencesInBody += substr_count($messages['body'], strtoupper($_GET['search']));
+                        // Lowercase
+                        $occurencesInBody += substr_count($messages['body'], strtolower($_GET['search']));
+                        // Total body
+                        $messages['pertinence'] += $occurencesInBody;
+
+                        $totalOccurences = $occurencesInSender+$occurencesInSubject+$occurencesInBody;
+
+
                         echo
                         "
                         <tr>
@@ -167,6 +223,8 @@
                             <td>".htmlentities($messages['sender'])."</td>
                             <td>".htmlentities($messages['subject'])."</td>
                             <td>".htmlentities($messages['body'])."</td>
+                            <td>".$totalOccurences."</td>
+                            <td>".$messages['pertinence']."</td>
                         </tr>
                         ";
                     }
@@ -185,7 +243,6 @@
             ?>
 
         </center>
-
 
     </body>
 
@@ -208,7 +265,34 @@ $(document).ready(function() {
 } );
 
 $(document).ready(function() {
-    $('#messagesTables').DataTable();
+    $('#messagesTable').DataTable({
+        "order": [[ 6, "desc" ]],
+        "lengthMenu": [ [100, 25, 50, -1], [100, 25, 50, "All"] ]
+    });
 } );
+
+var motRecherche = "<?php echo $_GET['search']; ?>";
+console.log(motRecherche);
+
+// $("messagesTable:contains('" + motRecherche + "')").each(function(){
+//      if($(this).children().length < 1)
+//           $(this).html(
+//                $(this).text().replace(
+//                     /"motRecherche"/
+//                     ,'<span containsStringImLookingFor="true">/"motRecherche"/</span>'
+//                )
+//            )
+// });
+
+$('*:contains("Richard")').each(function(){
+     if($(this).children().length < 1)
+          $(this).html(
+               $(this).text().replaceWith('<span id="containsStringImLookingFor">"Richard"</span>')
+           )
+});
+
+$('#containsStringImLookingFor').css("color","red");
+
+// $( "#messagesTable" ).contents().find( motRecherche ).css( "color", "red" );
 
 </script>
