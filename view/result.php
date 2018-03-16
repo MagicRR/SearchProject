@@ -260,39 +260,36 @@
 
 <script>
 
-$(document).ready(function() {
-    $('#employeesTable').DataTable();
-} );
+
+
 
 $(document).ready(function() {
+
+    $('#employeesTable').DataTable();
+
     $('#messagesTable').DataTable({
         "order": [[ 6, "desc" ]],
         "lengthMenu": [ [100, 25, 50, -1], [100, 25, 50, "All"] ]
     });
+
+    var motRecherche = "<?php echo $_GET['search']; ?>";
+    console.log(motRecherche);
+
+    var regex = new RegExp(motRecherche,"g")
+
+    $('*:contains("' + motRecherche + '")').each(function(){
+        if($(this).children().length < 1)
+        {
+            console.log(this);
+            $(this).html(
+                $(this).html().replace(
+                    regex,"<span style='color:red'>" + motRecherche + "</span>"
+                )
+            );
+        }
+
+    });
+
 } );
-
-var motRecherche = "<?php echo $_GET['search']; ?>";
-console.log(motRecherche);
-
-// $("messagesTable:contains('" + motRecherche + "')").each(function(){
-//      if($(this).children().length < 1)
-//           $(this).html(
-//                $(this).text().replace(
-//                     /"motRecherche"/
-//                     ,'<span containsStringImLookingFor="true">/"motRecherche"/</span>'
-//                )
-//            )
-// });
-
-$('*:contains("Richard")').each(function(){
-     if($(this).children().length < 1)
-          $(this).html(
-               $(this).text().replaceWith('<span id="containsStringImLookingFor">"Richard"</span>')
-           )
-});
-
-$('#containsStringImLookingFor').css("color","red");
-
-// $( "#messagesTable" ).contents().find( motRecherche ).css( "color", "red" );
 
 </script>
