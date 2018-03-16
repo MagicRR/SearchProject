@@ -269,18 +269,16 @@ $(document).ready(function() {
 
     $('#messagesTable').DataTable({
         "order": [[ 6, "desc" ]],
-        "lengthMenu": [ [100, 25, 50, -1], [100, 25, 50, "All"] ]
+        "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ]
     });
 
     var motRecherche = "<?php echo $_GET['search']; ?>";
-    console.log(motRecherche);
 
     var regex = new RegExp(motRecherche,"g")
 
     $('*:contains("' + motRecherche + '")').each(function(){
         if($(this).children().length < 1)
         {
-            console.log(this);
             $(this).html(
                 $(this).html().replace(
                     regex,"<span style='color:red'>" + motRecherche + "</span>"
