@@ -216,7 +216,6 @@
                                 echo
                                     "
                             <tr>
-<<<<<<< HEAD
                                 <td>".htmlentities($messages['mid'])."</td>
                                 <td>".htmlentities($messages['date'])."</td>
                                 <td>".htmlentities($messages['sender'])."</td>
@@ -224,15 +223,6 @@
                                 <td><div class='cut-text'>".htmlentities($messages['body'])."</div></td>
                                 <td>".$totalOccurences."</td>
                                 <td>".$messages['pertinence']."</td>
-=======
-                                <td>" . htmlentities($messages['mid']) . "</td>
-                                <td>" . htmlentities($messages['date']) . "</td>
-                                <td>" . htmlentities($messages['sender']) . "</td>
-                                <td>" . htmlentities($messages['subject']) . "</td>
-                                <td>" . htmlentities($messages['body']) . "</td>
-                                <td>" . $totalOccurences . "</td>
-                                <td>" . $messages['pertinence'] . "</td>
->>>>>>> b5c83adaa09b294d75e5f670e261065bda822844
                             </tr>
                             ";
                             }
