@@ -216,13 +216,13 @@
                                 echo
                                     "
                             <tr>
-                                <td>".htmlentities($messages['mid'])."</td>
-                                <td>".htmlentities($messages['date'])."</td>
-                                <td>".htmlentities($messages['sender'])."</td>
-                                <td>".htmlentities($messages['subject'])."</td>
-                                <td><div class='cut-text'>".htmlentities($messages['body'])."</div></td>
-                                <td>".$totalOccurences."</td>
-                                <td>".$messages['pertinence']."</td>
+                                <td>" . htmlentities($messages['mid']) . "</td>
+                                <td>" . htmlentities($messages['date']) . "</td>
+                                <td>" . htmlentities($messages['sender']) . "</td>
+                                <td>" . htmlentities($messages['subject']) . "</td>
+                                <td>" . htmlentities($messages['body']) . "</td>
+                                <td>" . $totalOccurences . "</td>
+                                <td>" . $messages['pertinence'] . "</td>
                             </tr>
                             ";
                             }
