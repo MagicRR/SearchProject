@@ -25,6 +25,11 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
                     <form action="result.php" method="GET">
                         <input type="text" class="form-control" name="search" placeholder="Search..." id="searchInput">
+                        <select name="choix" size="1">
+                            <option>All
+                            <option>Employee
+                            <option>Message
+                        </select>
                         <button type="submit" class="btn btn-primary" id="buttonSubmit"><i class="fa fa-search"></i></button>
                     </form>
 

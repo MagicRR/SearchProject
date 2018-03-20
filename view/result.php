@@ -13,13 +13,15 @@
         exit($e->getMessage());
     }
 
-    if (isset($_GET['search']) && trim($_GET['search'])!="") {
+    if ( (isset($_GET['search']) && trim($_GET['search'])!="") && (isset($_GET['choix']) && trim($_GET['choix'])!="")) {
 
         // Concaténation du % pour utiliser le LIKE
         $getSearch = '%'.$_GET['search'].'%';
 
-        // 1ère requête table Employee
-        $req = 'SELECT *
+        if( "Message" != $_GET['choix'] ) {
+
+            // 1ère requête table Employee
+            $req = 'SELECT *
     			FROM eurondb.employeelist
                 WHERE eid LIKE :recherche
                 OR firstName LIKE :recherche
@@ -31,24 +33,25 @@
                 OR status LIKE :recherche
     			ORDER BY 1 DESC';
 
-        $statement = $pdo->prepare($req);
+            $statement = $pdo->prepare($req);
 
-        $statement->bindValue(':recherche', $getSearch);
+            $statement->bindValue(':recherche', $getSearch);
 
-        $statement->execute();
+            $statement->execute();
 
-        $error = $statement->errorInfo();
+            $error = $statement->errorInfo();
 
-        if( $error[0] != 00000){
-            print_r($error);
+            if ($error[0] != 00000) {
+                print_r($error);
+            } else {
+                $searchListEmployee = $statement->fetchall();
+            }
         }
-        else{
-            $searchListEmployee = $statement->fetchall();
-        }
 
+        if( "Employee" != $_GET['choix'] ) {
 
-        // 2ème requête table Message
-        $req2 = 'SELECT *
+            // 2ème requête table Message
+            $req2 = 'SELECT *
     			FROM eurondb.message
                 WHERE date >= "2002-01-01" AND (
                 mid LIKE :recherche
@@ -59,19 +62,19 @@
                 OR body LIKE :recherche)
     			ORDER BY 1 DESC';
 
-        $statement2 = $pdo->prepare($req2);
+            $statement2 = $pdo->prepare($req2);
 
-        $statement2->bindValue(':recherche', $getSearch);
+            $statement2->bindValue(':recherche', $getSearch);
 
-        $statement2->execute();
+            $statement2->execute();
 
-        $error2 = $statement2->errorInfo();
+            $error2 = $statement2->errorInfo();
 
-        if( $error[0] != 00000){
-            print_r($error);
-        }
-        else{
-            $searchListMessage = $statement2->fetchall();
+            if ($error2[0] != 00000) {
+                print_r($error);
+            } else {
+                $searchListMessage = $statement2->fetchall();
+            }
         }
     }
 ?>
@@ -99,137 +102,137 @@
 
                 <?php
 
-                if (isset($_GET['search']) && trim($_GET['search'])!=""){
+                if ( (isset($_GET['search']) && trim($_GET['search'])!="") && (isset($_GET['choix']) && trim($_GET['choix'])!="")) {
+                    if( "Message" != $_GET['choix'] ) {
 
-                ?>
+                        ?>
 
-                <br/>
-                <h1>Liste des Employés</h1>
-                <br/>
+                        <br/>
+                        <h1>Liste des Employés</h1>
+                        <br/>
 
-                <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Prénom</th>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Poste</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-
-                        foreach($searchListEmployee as $employees)
-                        {
-                            echo
-                            "
+                        <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
                             <tr>
-                                <td>".htmlentities($employees['eid'])."</td>
-                                <td>".htmlentities($employees['firstName'])."</td>
-                                <td>".htmlentities($employees['lastName'])."</td>
-                                <td>".htmlentities($employees['Email_id'])."</td>
-                                <td>".htmlentities($employees['status'])."</td>
+                                <th>ID</th>
+                                <th>Prénom</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Poste</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+
+                            foreach ($searchListEmployee as $employees) {
+                                echo
+                                    "
+                            <tr>
+                                <td>" . htmlentities($employees['eid']) . "</td>
+                                <td>" . htmlentities($employees['firstName']) . "</td>
+                                <td>" . htmlentities($employees['lastName']) . "</td>
+                                <td>" . htmlentities($employees['Email_id']) . "</td>
+                                <td>" . htmlentities($employees['status']) . "</td>
                             </tr>
                             ";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                            }
+                            ?>
+                            </tbody>
+                        </table>
 
-                <br/>
-                <h1>Liste des Mails</h1>
-                <br/>
-
-                <table id="messagesTable" class="table table-striped table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Expéditeur</th>
-                            <th>Sujet</th>
-                            <th>Corps du mail</th>
-                            <th>Occurences du mot</th>
-                            <th>Poids de la recherche</th>
-                        </tr>
-                    </thead>
-                    <tbody>
                         <?php
 
-                        // Attention, c'est parti pour l'algorithme
-                        foreach($searchListMessage as $messages)
-                        {
+                    }
+                    if( "Employee" != $_GET['choix'] ) {
 
-                            // Initialisation de l'algorithme
-                            $messages['pertinence'] = 0;
+                        ?>
+                        <br/>
+                        <h1>Liste des Mails</h1>
+                        <br/>
 
-                            // Occurences dans le sender, poids * 10
-                            $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
-                            // Uppercase
-                            $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
-                            // Lowercase
-                            $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
-                            // Total sender
-                            $messages['pertinence'] += $occurencesInSender * 10;
-
-
-
-                            // Occurences dans la date, poids * 100
-                            $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
-                            // Uppercase
-                            $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
-                            // Lowercase
-                            $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
-                            // Total sender
-                            $messages['pertinence'] += $occurencesInSender * 10;
-
-
-
-
-                            // Occurences dans le subject, poids * 5
-                            $occurencesInSubject = substr_count($messages['subject'], $_GET['search']);
-                            // Uppercase
-                            $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
-                            // Lowercase
-                            $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
-                            // Total subject
-                            $messages['pertinence'] += $occurencesInSubject * 5;
-
-
-
-
-                            // Occurences dans le body, poids * 1
-                            $occurencesInBody = substr_count($messages['body'], $_GET['search']);
-                            // Uppercase
-                            $occurencesInBody += substr_count($messages['body'], strtoupper($_GET['search']));
-                            // Lowercase
-                            $occurencesInBody += substr_count($messages['body'], strtolower($_GET['search']));
-                            // Total body
-                            $messages['pertinence'] += $occurencesInBody;
-
-                            $totalOccurences = $occurencesInSender+$occurencesInSubject+$occurencesInBody;
-
-
-                            echo
-                            "
+                        <table id="messagesTable" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
                             <tr>
-                                <td>".htmlentities($messages['mid'])."</td>
-                                <td>".htmlentities($messages['date'])."</td>
-                                <td>".htmlentities($messages['sender'])."</td>
-                                <td>".htmlentities($messages['subject'])."</td>
-                                <td>".htmlentities($messages['body'])."</td>
-                                <td>".$totalOccurences."</td>
-                                <td>".$messages['pertinence']."</td>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Expéditeur</th>
+                                <th>Sujet</th>
+                                <th>Corps du mail</th>
+                                <th>Occurences du mot</th>
+                                <th>Poids de la recherche</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+
+                            // Attention, c'est parti pour l'algorithme
+                            foreach ($searchListMessage as $messages) {
+
+                                // Initialisation de l'algorithme
+                                $messages['pertinence'] = 0;
+
+                                // Occurences dans le sender, poids * 10
+                                $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
+                                // Uppercase
+                                $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
+                                // Lowercase
+                                $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
+                                // Total sender
+                                $messages['pertinence'] += $occurencesInSender * 10;
+
+
+                                // Occurences dans la date, poids * 100
+                                $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
+                                // Uppercase
+                                $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
+                                // Lowercase
+                                $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
+                                // Total sender
+                                $messages['pertinence'] += $occurencesInSender * 10;
+
+
+                                // Occurences dans le subject, poids * 5
+                                $occurencesInSubject = substr_count($messages['subject'], $_GET['search']);
+                                // Uppercase
+                                $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
+                                // Lowercase
+                                $occurencesInSubject += substr_count($messages['subject'], strtolower($_GET['search']));
+                                // Total subject
+                                $messages['pertinence'] += $occurencesInSubject * 5;
+
+
+                                // Occurences dans le body, poids * 1
+                                $occurencesInBody = substr_count($messages['body'], $_GET['search']);
+                                // Uppercase
+                                $occurencesInBody += substr_count($messages['body'], strtoupper($_GET['search']));
+                                // Lowercase
+                                $occurencesInBody += substr_count($messages['body'], strtolower($_GET['search']));
+                                // Total body
+                                $messages['pertinence'] += $occurencesInBody;
+
+                                $totalOccurences = $occurencesInSender + $occurencesInSubject + $occurencesInBody;
+
+
+                                echo
+                                    "
+                            <tr>
+                                <td>" . htmlentities($messages['mid']) . "</td>
+                                <td>" . htmlentities($messages['date']) . "</td>
+                                <td>" . htmlentities($messages['sender']) . "</td>
+                                <td>" . htmlentities($messages['subject']) . "</td>
+                                <td>" . htmlentities($messages['body']) . "</td>
+                                <td>" . $totalOccurences . "</td>
+                                <td>" . $messages['pertinence'] . "</td>
                             </tr>
                             ";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                            }
+                            ?>
+                            </tbody>
+                        </table>
 
 
-                <?php
-
+                        <?php
+                    }
                 }
                 else {
                     echo "<h1>Il n'y a pas de requête GET</h1>";
