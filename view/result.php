@@ -18,49 +18,48 @@
         // Concaténation du % pour utiliser le LIKE
         $getSearch = '%'.$_GET['search'].'%';
 
-        if( "Message" != $_GET['choix'] ) {
+        // 1ère requête table Employee
+        $req = 'SELECT *
+			FROM eurondb.employeelist
+            WHERE eid LIKE :recherche
+            OR firstName LIKE :recherche
+            OR lastName LIKE :recherche
+            OR Email_id LIKE :recherche
+            OR Email2 LIKE :recherche
+            OR Email3 LIKE :recherche
+            OR EMail4 LIKE :recherche
+            OR status LIKE :recherche
+			ORDER BY 1 DESC';
 
-            // 1ère requête table Employee
-            $req = 'SELECT *
-    			FROM eurondb.employeelist
-                WHERE eid LIKE :recherche
-                OR firstName LIKE :recherche
-                OR lastName LIKE :recherche
-                OR Email_id LIKE :recherche
-                OR Email2 LIKE :recherche
-                OR Email3 LIKE :recherche
-                OR EMail4 LIKE :recherche
-                OR status LIKE :recherche
-    			ORDER BY 1 DESC';
+        $statement = $pdo->prepare($req);
 
-            $statement = $pdo->prepare($req);
+        $statement->bindValue(':recherche', $getSearch);
 
-            $statement->bindValue(':recherche', $getSearch);
+        $statement->execute();
 
-            $statement->execute();
+        $error = $statement->errorInfo();
 
-            $error = $statement->errorInfo();
-
-            if ($error[0] != 00000) {
-                print_r($error);
-            } else {
-                $searchListEmployee = $statement->fetchall();
-            }
+        if ($error[0] != 00000) {
+            print_r($error);
+        } else {
+            $searchListEmployee = $statement->fetchall();
         }
 
+
+        // Recherche sur Message et All
         if( "Employee" != $_GET['choix'] ) {
 
-            // 2ème requête table Message
             $req2 = 'SELECT *
-    			FROM eurondb.message
-                WHERE date >= "2002-01-01" AND (
-                mid LIKE :recherche
-                OR sender LIKE :recherche
-                OR date LIKE :recherche
-                OR message_id LIKE :recherche
-                OR subject LIKE :recherche
-                OR body LIKE :recherche)
-    			ORDER BY 1 DESC';
+                     FROM eurondb.message AS me
+                     LEFT JOIN eurondb.employeelist ON me.sender = eurondb.employeelist.Email_id
+                     WHERE date >= "2002-01-01" AND (
+                     mid LIKE :recherche
+                     OR sender LIKE :recherche
+                     OR date LIKE :recherche
+                     OR message_id LIKE :recherche
+                     OR subject LIKE :recherche
+                     OR body LIKE :recherche)
+                     ORDER BY 1 DESC';
 
             $statement2 = $pdo->prepare($req2);
 
@@ -160,6 +159,7 @@
                                 <th>Corps du mail</th>
                                 <th>Occurences du mot</th>
                                 <th>Poids de la recherche</th>
+                                <th>Multiplicateur</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -182,13 +182,13 @@
 
 
                                 // Occurences dans la date, poids * 100
-                                $occurencesInSender = substr_count($messages['sender'], $_GET['search']);
+                                $occurencesInDate = substr_count($messages['date'], $_GET['search']);
                                 // Uppercase
-                                $occurencesInSender += substr_count($messages['sender'], strtoupper($_GET['search']));
+                                $occurencesInDate += substr_count($messages['date'], strtoupper($_GET['search']));
                                 // Lowercase
-                                $occurencesInSender += substr_count($messages['sender'], strtolower($_GET['search']));
+                                $occurencesInDate += substr_count($messages['date'], strtolower($_GET['search']));
                                 // Total sender
-                                $messages['pertinence'] += $occurencesInSender * 10;
+                                $messages['pertinence'] += $occurencesInDate * 100;
 
 
                                 // Occurences dans le subject, poids * 5
@@ -210,8 +210,42 @@
                                 // Total body
                                 $messages['pertinence'] += $occurencesInBody;
 
-                                $totalOccurences = $occurencesInSender + $occurencesInSubject + $occurencesInBody;
 
+                                $totalOccurences = $occurencesInSender + $occurencesInSubject + $occurencesInBody + $occurencesInDate;
+
+
+                                if($messages['status'] == 'CEO'){
+                                    $messages['multiplicateur'] = 10;
+                                }
+                                elseif($messages['status'] == 'President') {
+                                    $messages['multiplicateur'] = 5;
+                                }
+                                elseif($messages['status'] == 'Vice President') {
+                                    $messages['multiplicateur'] = 5;
+                                }
+                                elseif($messages['status'] == 'Director') {
+                                    $messages['multiplicateur'] = 3;
+                                }
+                                elseif($messages['status'] == 'In House Lawyer') {
+                                    $messages['multiplicateur'] = 3;
+                                }
+                                elseif($messages['status'] == 'Managing Director') {
+                                    $messages['multiplicateur'] = 2.5;
+                                }
+                                elseif($messages['status'] == 'Manager') {
+                                    $messages['multiplicateur'] = 2;
+                                }
+                                elseif($messages['status'] == 'Trader') {
+                                    $messages['multiplicateur'] = 1.25;
+                                }
+                                elseif($messages['status'] == 'Employee') {
+                                    $messages['multiplicateur'] = 1;
+                                }
+                                else{
+                                    $messages['multiplicateur'] = 0.75;
+                                }
+
+                                $messages['pertinence'] = $messages['pertinence'] * $messages['multiplicateur'];
 
                                 echo
                                     "
@@ -223,6 +257,7 @@
                                 <td><div class='.cut-text'>" . htmlentities($messages['body']) . "</div></td>
                                 <td>" . $totalOccurences . "</td>
                                 <td>" . $messages['pertinence'] . "</td>
+                                <td>" . $messages['multiplicateur'] . "</td>
                             </tr>
                             ";
                             }

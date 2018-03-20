@@ -37,7 +37,7 @@ input[type=text]:focus
     margin-top: 20rem;
 }
 
-.cut-text
+/* .cut-text
 {
    display: table-cell
    height: 10em;
@@ -45,4 +45,4 @@ input[type=text]:focus
    width: 40em;
    overflow: hidden;
    vertical-align: middle;
-}
+} */
