@@ -220,7 +220,7 @@
                                 <td>" . htmlentities($messages['date']) . "</td>
                                 <td>" . htmlentities($messages['sender']) . "</td>
                                 <td>" . htmlentities($messages['subject']) . "</td>
-                                <td>" . htmlentities($messages['body']) . "</td>
+                                <td><div class='.cut-text'>" . htmlentities($messages['body']) . "</div></td>
                                 <td>" . $totalOccurences . "</td>
                                 <td>" . $messages['pertinence'] . "</td>
                             </tr>
@@ -266,6 +266,7 @@
             "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ]
         });
 
+        // Mot recherche
         var motRecherche = "<?php echo $_GET['search']; ?>";
         var regex = new RegExp(motRecherche,"g");
 
@@ -280,6 +281,71 @@
             }
 
         });
+
+        // Mot recherche uppercase first letter
+        var motRechercheUpperFirstLetter = motRecherche.charAt(0).toUpperCase()+motRecherche.slice(1);
+        var regexUpperFirstLetter = new RegExp(motRechercheUpperFirstLetter,"g");
+
+        $('*:contains("' + motRechercheUpperFirstLetter + '")').each(function(){
+
+            if($(this).children().length < 1){
+                $(this).html(
+                    $(this).html().replace(
+                        regexUpperFirstLetter,"<span style='color:red'>" + motRechercheUpperFirstLetter + "</span>"
+                    )
+                );
+            }
+
+        });
+
+        // Mot recherche lowercase first letter
+        var motRechercheLowerFirstLetter = motRecherche.charAt(0).toLowerCase()+motRecherche.slice(1);
+        var regexLowerFirstLetter = new RegExp(motRechercheLowerFirstLetter,"g");
+
+        $('*:contains("' + motRechercheLowerFirstLetter + '")').each(function(){
+
+            if($(this).children().length < 1){
+                $(this).html(
+                    $(this).html().replace(
+                        regexLowerFirstLetter,"<span style='color:red'>" + motRechercheLowerFirstLetter + "</span>"
+                    )
+                );
+            }
+
+        });
+
+        // Mot recherche uppercase
+        var motRechercheUpper = motRecherche.charAt(0).toUpperCase()+motRecherche.slice(1);
+        var regexUpper = new RegExp(motRechercheUpper,"g");
+
+        $('*:contains("' + motRechercheUpper + '")').each(function(){
+
+            if($(this).children().length < 1){
+                $(this).html(
+                    $(this).html().replace(
+                        regexUpper,"<span style='color:red'>" + motRechercheUpper + "</span>"
+                    )
+                );
+            }
+
+        });
+
+        // Mot recherche lowercase
+        var motRechercheLower = motRecherche.charAt(0).toUpperCase()+motRecherche.slice(1);
+        var regexLower = new RegExp(motRechercheLower,"g");
+
+        $('*:contains("' + motRechercheLower + '")').each(function(){
+
+            if($(this).children().length < 1){
+                $(this).html(
+                    $(this).html().replace(
+                        regexLower,"<span style='color:red'>" + motRechercheLower + "</span>"
+                    )
+                );
+            }
+
+        });
+
     } );
 
 </script>
