@@ -254,7 +254,7 @@
                                 <td>" . htmlentities($messages['date']) . "</td>
                                 <td>" . htmlentities($messages['sender']) . "</td>
                                 <td>" . htmlentities($messages['subject']) . "</td>
-                                <td><div class='.cut-text'>" . htmlentities($messages['body']) . "</div></td>
+                                <td><div id=".$messages['mid']." class='cut-text everyText'>" . htmlentities($messages['body']) . "</div></td>
                                 <td>" . $totalOccurences . "</td>
                                 <td>" . $messages['pertinence'] . "</td>
                                 <td>" . $messages['multiplicateur'] . "</td>
@@ -310,7 +310,7 @@
             if($(this).children().length < 1){
                 $(this).html(
                     $(this).html().replace(
-                        regex,"<span style='color:red'>" + motRecherche + "</span>"
+                        regex,"<span class='motRechercheColor'>" + motRecherche + "</span>"
                     )
                 );
             }
@@ -326,7 +326,7 @@
             if($(this).children().length < 1){
                 $(this).html(
                     $(this).html().replace(
-                        regexUpperFirstLetter,"<span style='color:red'>" + motRechercheUpperFirstLetter + "</span>"
+                        regexUpperFirstLetter,"<span class='motRechercheColor'>" + motRechercheUpperFirstLetter + "</span>"
                     )
                 );
             }
@@ -342,7 +342,7 @@
             if($(this).children().length < 1){
                 $(this).html(
                     $(this).html().replace(
-                        regexLowerFirstLetter,"<span style='color:red'>" + motRechercheLowerFirstLetter + "</span>"
+                        regexLowerFirstLetter,"<span class='motRechercheColor'>" + motRechercheLowerFirstLetter + "</span>"
                     )
                 );
             }
@@ -358,7 +358,7 @@
             if($(this).children().length < 1){
                 $(this).html(
                     $(this).html().replace(
-                        regexUpper,"<span style='color:red'>" + motRechercheUpper + "</span>"
+                        regexUpper,"<span class='motRechercheColor'>" + motRechercheUpper + "</span>"
                     )
                 );
             }
@@ -374,11 +374,16 @@
             if($(this).children().length < 1){
                 $(this).html(
                     $(this).html().replace(
-                        regexLower,"<span style='color:red'>" + motRechercheLower + "</span>"
+                        regexLower,"<span class='motRechercheColor'>" + motRechercheLower + "</span>"
                     )
                 );
             }
 
+        });
+
+        $(".cut-text").click(function( event )
+        {
+            $("#"+event.target.id).toggleClass("cut-text");
         });
 
     } );
