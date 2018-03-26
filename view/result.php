@@ -99,6 +99,8 @@
 
             <center>
 
+                <img src="../img/enron-logo" id="logo"/>
+
                 <?php
 
                 if ( (isset($_GET['search']) && trim($_GET['search'])!="") && (isset($_GET['choix']) && trim($_GET['choix'])!="")) {
